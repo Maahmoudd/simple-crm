@@ -2,7 +2,9 @@
 
 namespace Crm\Customer\Listeners;
 
-use Crm\Customer\Events\ProjectCreation;
+
+use Crm\Project\Events\ProjectCreation;
+
 
 class SendWelcomeEmail
 {

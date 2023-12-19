@@ -22,26 +22,18 @@ class CustomerController extends Controller
         $this->customerExportService = $customerExportService;
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        $customer = $this->customerService->index($request);
-        return reponseBuilder()
-            ->setData($customer)
-            ->response();
+        return $this->customerService->index();
     }
 
     public function show($id)
     {
         $customer = $this->customerService->show($id);
         if(!$customer) {
-            return reponseBuilder()
-                ->setStatusCode(JsonResponse::HTTP_NOT_FOUND)
-                ->setErrors(['generic' => 'Customer not found'])
-                ->response();
+            return response()->json(['Error' => 'Customer Not Found']);
         }
-        return reponseBuilder()
-            ->setData($customer)
-            ->response();
+        return $customer;
     }
 
     public function create(CreateCustomer $request)

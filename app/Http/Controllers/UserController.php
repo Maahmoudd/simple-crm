@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Crm\User\Requests\UserCreation;
-use Crm\User\Services\UserService;
+use Crm\User\Requests\NoteCreation;
+use Crm\User\Services\NoteService;
 
 class UserController extends Controller
 {
-    private UserService $userService;
+    private NoteService $userService;
     const TOKEN_NAME = 'personal';
 
-    public function __construct( UserService $userService)
+    public function __construct(NoteService $userService)
     {
         $this->userService = $userService;
     }
 
-    public function create(UserCreation $request)
+    public function create(NoteCreation $request)
     {
         $user = $this->userService->create($request);
         return response()->json(

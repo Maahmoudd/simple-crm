@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 
-use Crm\Customer\Models\Note;
+use Crm\Customer\Models\Customer;
+use Crm\Note\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -15,9 +16,14 @@ class NotesController extends Controller
         return Note::where('customer_id',$customerId)->get();
     }
 
-    public function show($id)
+    public function show($customer_id, $id)
     {
-        return Note::find($id) ?? response()->json(['status'=> 'Not found'], Response::HTTP_NOT_FOUND);
+        $customer = Customer::find($customer_id);
+        $note = Note::findOrFail($id);
+        if(!$note || !$customer){
+            return response()->json(['status'=> 'Not found'], Response::HTTP_NOT_FOUND);
+        }
+        return $note;
     }
 
     public function create(Request $request, $customerId)

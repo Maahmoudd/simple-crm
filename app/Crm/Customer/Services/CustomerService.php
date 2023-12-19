@@ -2,7 +2,7 @@
 
 namespace Crm\Customer\Services;
 
-use App\Crm\Base\Repositories\RepositoryInterface;
+use Crm\Customer\Resources\CustomerResource;
 use Crm\Customer\Events\CustomerCreation;
 use Crm\Customer\Repositories\CustomerRepository;
 use Crm\Customer\Models\Customer;
@@ -18,14 +18,14 @@ class CustomerService
         $this->customerRepository = $customerRepository;
     }
 
-    public function index(Request $request)
+    public function index()
     {
         return $this->customerRepository->all();
     }
 
     public function show($id)
     {
-        return $this->customerRepository->find($id);
+        return new CustomerResource($this->customerRepository->find($id));
     }
 
     public function create(string $name)
@@ -35,7 +35,7 @@ class CustomerService
         $customer->save();
 
         event(new CustomerCreation($customer));
-        return $customer;
+        return new CustomerResource($customer);
     }
 
 
@@ -50,7 +50,7 @@ class CustomerService
         $customer->name = $request->get('name');
         $customer->save();
 
-        return $customer;
+        return new CustomerResource($customer);
     }
 
 
