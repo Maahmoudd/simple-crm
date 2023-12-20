@@ -6,7 +6,6 @@ use Crm\Customer\Models\Customer;
 use Crm\Note\Models\Note;
 use Crm\Note\Requests\NoteCreation;
 use Crm\Note\Resources\NoteResource;
-use Illuminate\Http\Response;
 
 class NoteService
 {
@@ -19,7 +18,7 @@ class NoteService
     public function show($customer_id, $id)
     {
         $customer = Customer::find($customer_id);
-        $note = Note::findOrFail($id);
+        $note = Note::find($id);
         if($note->customer_id != $customer->id)
         {
             return false;
@@ -27,9 +26,11 @@ class NoteService
         return $note;
     }
 
-    public function create(NoteCreation $note, $customerId)
+    public function create(NoteCreation $request, $customerId)
     {
+        $note = new Note();
         $note['customer_id'] = $customerId;
+        $note['note'] = $request->note;
         $note->save();
 
         return new NoteResource($note);
