@@ -2,76 +2,49 @@
 
 namespace App\Http\Controllers;
 
-
-use Crm\Customer\Models\Customer;
-use Crm\Note\Models\Note;
-use Illuminate\Http\Request;
+use Crm\Note\Requests\NoteCreation;
+use Crm\Note\Resources\NoteResource;
+use Crm\Note\Services\NoteService;
 use Illuminate\Http\Response;
 
 class NotesController extends Controller
 {
 
-    public function index(Request $request, $customerId)
+    private NoteService $noteService;
+    public function __construct(NoteService $noteService)
     {
-        return Note::where('customer_id',$customerId)->get();
+        $this->noteService = $noteService;
+    }
+
+    public function index($customerId)
+    {
+        return NoteResource::collection($this->noteService->index($customerId));
     }
 
     public function show($customer_id, $id)
     {
-        $customer = Customer::find($customer_id);
-        $note = Note::findOrFail($id);
-        if(!$note || !$customer){
-            return response()->json(['status'=> 'Not found'], Response::HTTP_NOT_FOUND);
-        }
-        return $note;
+
+        return new NoteResource($this->noteService->show($customer_id, $id)) ??
+            response()->json(['status'=> 'Not found'], Response::HTTP_NOT_FOUND);
     }
 
-    public function create(Request $request, $customerId)
+    public function create(NoteCreation $request, $customerId)
     {
-        $note = new Note();
-        $note->note = $request->get('note');
-        $note->customer_id = $customerId;
-        $note->save();
-
-        return $note;
+        return new NoteResource($this->noteService->create($request, $customerId));
     }
 
 
-    public function update(Request $request, $customerId, $id)
+    public function update(NoteCreation $request, $customerId, $id)
     {
-        $note = Note::find($id);
-
-        if(!$note) {
-            return response()->json(['status'=> 'Not found'], Response::HTTP_NOT_FOUND);
-        }
-        $customerId = (int)$customerId;
-
-        if($note->customer_id !== $customerId) {
-            return response()->json(['status'=> 'Invalid Data'], Response::HTTP_BAD_REQUEST);
-        }
-
-        $note->note = $request->get('note');
-        $note->save();
-
-        return $note;
+        return new NoteResource($this->noteService->update($request, $customerId, $id)) ??
+             response()->json(['status'=> 'Not found'], Response::HTTP_NOT_FOUND);
     }
 
 
-    public function delete(Request $request,$customerId, $id)
+    public function delete($customerId, $id)
     {
-        $note = Note::find($id);
-
-        if(!$note) {
-            return response()->json(['status'=> 'Not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $customerId = (int)$customerId;
-        if($note->customer_id !== $customerId) {
-            return response()->json(['status'=> 'Invalid Data'], Response::HTTP_BAD_REQUEST);
-        }
-        $note->delete();
-
-        return response()->json(['status'=> 'deleted'], Response::HTTP_OK);
+        return $this->noteService->delete($customerId, $id) ??
+            response()->json(['status' => 'Not Found']);
     }
 
 }

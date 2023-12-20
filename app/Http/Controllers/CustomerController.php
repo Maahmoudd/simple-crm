@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Crm\Base\ResponseBuilder;
 use Crm\Customer\Requests\CreateCustomer;
+use Crm\Customer\Resources\CustomerResource;
 use Crm\Customer\Services\CustomerExportService;
 use Crm\Customer\Services\CustomerService;
 use Crm\Customer\Services\Export\ExportFactory;
@@ -24,27 +25,24 @@ class CustomerController extends Controller
 
     public function index()
     {
-        return $this->customerService->index();
+        return CustomerResource::collection($this->customerService->index());
     }
 
     public function show($id)
     {
-        $customer = $this->customerService->show($id);
-        if(!$customer) {
-            return response()->json(['Error' => 'Customer Not Found']);
-        }
-        return $customer;
+        return new CustomerResource($this->customerService->show($id)) ??
+            response()->json(['status' => 'Not Found']);
     }
 
     public function create(CreateCustomer $request)
     {
-        return $this->customerService->create($request->name);
+        return new CustomerResource($this->customerService->create($request->name));
     }
 
 
     public function update(Request $request, $id)
     {
-        return $this->customerService->update($request, $id);
+        return new CustomerResource($this->customerService->update($request, $id));
     }
 
 

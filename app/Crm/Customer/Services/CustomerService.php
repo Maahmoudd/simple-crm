@@ -25,7 +25,7 @@ class CustomerService
 
     public function show($id)
     {
-        return new CustomerResource($this->customerRepository->find($id));
+        return $this->customerRepository->find($id) ?? false;
     }
 
     public function create(string $name)
@@ -35,7 +35,7 @@ class CustomerService
         $customer->save();
 
         event(new CustomerCreation($customer));
-        return new CustomerResource($customer);
+        return $customer;
     }
 
 
@@ -50,7 +50,7 @@ class CustomerService
         $customer->name = $request->get('name');
         $customer->save();
 
-        return new CustomerResource($customer);
+        return $customer;
     }
 
 
