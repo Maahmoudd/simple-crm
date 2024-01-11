@@ -1,3 +1,4 @@
+<?php
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\NotesController;
 use App\Http\Controllers\ProjectController;
